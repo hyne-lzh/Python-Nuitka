@@ -219,3 +219,8 @@ __marimo__/
 
 #else
 .idea\
+lang_config.json
+nuitka_config.json
+main.build\
+main.dist\
+*.json
