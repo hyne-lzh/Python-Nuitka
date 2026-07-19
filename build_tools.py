@@ -1,7 +1,6 @@
 """
 Build standalone .exe for run_obf.py and upx.py using Nuitka.
-Please run this script NOT using Python 3.14+. Python 3.11 or 3.12 is recommended.
-如果 Python 3.14 编译失败，请切换到 Python 3.11/3.12 重新编译。
+Recommended: Python 3.11 or 3.12 with latest Nuitka.
 
 Usage / 用法:
     python build_tools.py
@@ -17,10 +16,6 @@ TOOLS = [
     "upx.py",       # UPX compressor GUI / UPX 压缩工具
 ]
 
-# Python 3.14+ has known issues with Nuitka (encodings module frozen incorrectly).
-# Python 3.14+ 与 Nuitka 存在已知兼容性问题（encodings 模块冻结失败）。
-_UNSUPPORTED_PYTHON = sys.version_info >= (3, 14)
-
 
 def build_exe(script: str):
     """Compile a single .py to standalone .exe, then copy exe to project root."""
@@ -28,26 +23,16 @@ def build_exe(script: str):
     print(f"Building: {script}")
     print(f"{'='*60}")
 
-    # 核心修复：
-    # 1. --include-package=encodings（而非 --include-module）确保整个包被打进去
-    #    这是解决 "Frozen object named 'encodings' is invalid" 的关键
-    # 2. 显式 include tkinter 子模块（防止 Nuitka 漏掉 ttk 等）
-    # 3. --enable-plugin=tk-inter 处理 Tcl/Tk DLL 捆绑
+    # Nuitka 编译参数说明：
+    # 1. --standalone 自动检测依赖，无需 --enable-plugin=tk-inter
+    # 2. --include-package=encodings 解决 Python 3.14 冻结错误
+    # 3. 显式 include tkinter 子模块，防止 Nuitka 漏掉
+    # 4. --include-package=tkinter 替代已废弃的 --enable-plugin=tk-inter
     cmd = [
         sys.executable, "-m", "nuitka",
         "--standalone",
-        "--enable-plugin=tk-inter",
-        "--include-package=encodings",
-        "--include-module=codecs",
-        "--include-module=io",
-        "--include-module=abc",
-        "--include-module=tkinter",
-        "--include-module=tkinter.ttk",
-        "--include-module=tkinter.scrolledtext",
-        "--include-module=tkinter.filedialog",
-        "--include-module=tkinter.messagebox",
-        "--include-module=json",
-        "--include-module=threading",
+        "--include-package=tkinter",
+        "--include-package=tkinterdnd2",
         script,
     ]
 
@@ -73,20 +58,9 @@ def build_exe(script: str):
 
 if __name__ == "__main__":
     print("Tool EXE Builder | 子工具 EXE 编译器")
+    print(f"Python: {sys.version}")
     print("Compiling run_obf.py and upx.py into standalone .exe files...")
     print("正在将 run_obf.py 和 upx.py 编译为独立 .exe 文件...\n")
-
-    if _UNSUPPORTED_PYTHON:
-        print("=" * 60)
-        print("WARNING: Python 3.14+ detected!")
-        print("Nuitka may fail with 'encodings' freeze error on Python 3.14+.")
-        print("If compilation fails, re-run with Python 3.11 or 3.12.")
-        print()
-        print("警告：检测到 Python 3.14+！")
-        print("Nuitka 在 Python 3.14+ 上可能出现 encodings 冻结错误。")
-        print("如编译失败，请换用 Python 3.11 或 3.12 重新运行。")
-        print("=" * 60)
-        print()
 
     failed = []
     for tool in TOOLS:
