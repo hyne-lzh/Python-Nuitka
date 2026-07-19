@@ -1,195 +1,218 @@
-# README.md 多引擎复合混淆工具双语文档
+# Python-Nuitka Toolchain | Python-Nuitka 工具链
 
-# Multi-Engine Python Obfuscator GUI
-A bilingual multi-layer composite Python code obfuscation tool based on `python-obfuscator` + AES symmetric encryption + anti-debug detection, with complete Tkinter graphical interactive interface.
-一款基于 python-obfuscator + AES对称加密 + 反调试检测构建的双语多层复合Python代码混淆工具，配套完整Tkinter图形交互界面。
+A complete Python code protection and distribution toolchain: **Multi-Engine Obfuscation → Nuitka EXE Compilation → UPX Compression**, three tools working together to maximize the protection strength and minimize the distribution size of Python programs.
 
-## Project Overview | 项目概述
-This tool abandons single single-library obfuscation and adopts multi-engine composite reinforcement pipeline, supporting single file obfuscation, batch multi-file processing, code real-time preview, drag-and-drop loading, dark theme switching, configuration import/export, log saving and other practical functions.
-本工具摒弃单一库混淆，采用多引擎复合加固流水线，支持单文件混淆、批量多文件处理、代码实时预览、拖拽加载、深色主题切换、配置导入导出、日志保存等实用功能。
+一套完整的 Python 代码保护与分发工具链：**多引擎代码混淆 → Nuitka EXE 编译 → UPX 压缩优化**，三项工具协同工作，最大化提升 Python 程序的保护强度并缩减分发体积。
 
-### Multi-layer Obfuscation Pipeline | 多层混淆流水线
-1. Stage 1: Safe comment cleaning (only delete standalone line `#` comments, no damage to string internal symbols)
-   阶段1：安全注释清除（仅删除独立行#注释，不破坏字符串内部符号）
-2. Stage 2: Base grammar obfuscation via python-obfuscator (variable/function renaming, dead junk code, control flow flattening, hex/xor string encryption)
-   阶段2：python-obfuscator基础语法混淆（变量/函数重命名、垃圾无效代码、控制流扁平化、十六进制/异或字符串加密）
-3. Stage 3: AES-128 full text string symmetric encryption (optional, custom 16-bit encryption key supported)
-   阶段3：AES-128全文字符串对称加密（可选，支持自定义16位加密密钥）
-4. Stage 4: Inject cross-platform anti-debug detection code (block debugger attachment, auto exit program if detected)
-   阶段4：注入跨平台反调试检测代码（阻断调试器附加，检测到调试自动退出程序）
-5. Optional extra: Compile and export encrypted `.pyc` bytecode file for secondary anti-decompilation reinforcement
-   可选附加：编译导出加密pyc字节码文件，二次反编译加固
+---
 
-## Core Functions | 核心功能清单
-### 1. File Operation | 文件操作
-- Single file selection & automatic output path filling
-  单文件选择、输出路径自动填充
-- Batch multi-python script one-click obfuscation
-  批量多Python脚本一键混淆
-- Drag-and-drop file import: Directly drag `.py` into the window to load source code
-  拖拽文件导入：直接将py文件拖入窗口加载源码
-- Real-time dual split code preview panel (raw source / obfuscated code)
-  实时双分栏代码预览面板（原始代码 / 混淆后代码）
-- Code difference comparison pop-up window, view text changes before and after obfuscation
-  代码差异对比弹窗，查看混淆前后文本改动
+## Project Overview | 项目概览
 
-### 2. Multi-engine Encryption & Obfuscation | 多引擎加密混淆模块
-#### Base Obfuscation Module (python-obfuscator) 基础混淆模块
-- String Hex Encrypt / 字符串十六进制加密
-- Number Constant Encrypt / 数字常量运算伪装
-- Rename Variables / 变量随机乱码重命名
-- Rename Functions / 函数随机乱码重命名
-- Inject Dead Junk Code / 插入不可执行垃圾分支代码
-- Fake Exception Branches / 虚假异常捕获干扰逆向
-- Control Flow Flatten / 控制流扁平化打乱原始逻辑
-- String XOR Encrypt / 字符串异或二次加密
-- Random Indent Disturb / 随机缩进干扰代码可读性
-- Remove Type Annotations / 删除类型注解文本
+| Tool / 工具 | File / 文件 | Description / 功能 |
+|-------------|-------------|---------------------|
+| Multi-Engine Obfuscator / 多引擎混淆器 | `run_obf.py` | python-obfuscator + AES encryption + anti-debug → outputs obfuscated `.py` |
+|  |  | python-obfuscator + AES 加密 + 反调试 → 输出混淆后的 `.py` |
+| UPX Compressor / UPX 压缩器 | `upx.py` | UPX GUI frontend for compressing final `.exe` size |
+|  |  | UPX GUI 前端，用于压缩最终 `.exe` 体积 |
+| One-Click Launcher / 一键打包启动器 | `main2-exe.py` | Integrated launcher: Nuitka compilation + obfuscator + UPX compression |
+|  |  | 集成启动器：调用 Nuitka 编译 + 混淆器 + UPX 压缩 |
 
-#### Advanced Multi-engine Encryption Module 高级多引擎加密模块
-- AES String Encrypt / AES-128对称加密全部明文字符串 (Custom key support 支持自定义密钥)
-- Anti-Debug Detect / 跨平台反调试检测（Python trace hook + Windows IsDebuggerPresent API + stack debugger recognition）
-- Export Encrypted Pyc / 导出加密字节码pyc文件，提升反编译难度
+Typical workflow | 典型工作流：
 
-### 3. Auxiliary Practical Functions | 辅助实用功能
-- Dark / Light dual theme switch, eye-care dark mode
-  深色/浅色双主题切换，护眼暗色模式
-- Obfuscation configuration export & import (save preset as `.json`)
-  混淆配置导出/导入（将预设方案保存为json文件）
-- Complete running log box, support log export to local txt file
-  完整运行日志框，支持日志导出本地txt存档
-- One-click full dependency installation button (auto install all missing libraries)
-  一键全依赖安装按钮（自动批量安装缺失库）
-- MD5 hash calculation, verify text modification before and after obfuscation
-  MD5哈希值计算，校验混淆前后文本改动
-- Real-time progress bar to display obfuscation execution progress
-  实时进度条展示混淆执行进度
-- Built-in PyInstaller EXE packaging command prompt pop-up
-  内置PyInstaller打包EXE命令提示弹窗
 ```
-## Dependencies Installation | 依赖安装命令
+Source .py → [run_obf.py Multi-Layer Obfuscation] → Obfuscated .py
+原始 .py 源码 → [run_obf.py 多层混淆] → 混淆 .py
+                                                   → [Nuitka Compile] → .exe
+                                                   → [Nuitka 编译] → .exe
+                                                   → [UPX Compress] → Compact final exe
+                                                   → [UPX 压缩] → 精简最终 exe
+```
+
+---
+
+## 1. Multi-Engine Obfuscator | 多引擎复合混淆工具 (`run_obf.py`)
+
+A multi-layer composite Python code obfuscation tool based on python-obfuscator + AES-128 symmetric encryption + anti-debug detection, with a complete Tkinter graphical interface.
+
+基于 python-obfuscator + AES-128 对称加密 + 反调试检测的多层复合 Python 代码混淆工具，配套完整 Tkinter 图形交互界面。
+
+### Multi-Layer Obfuscation Pipeline | 多层混淆流水线
+
+| Stage / 阶段 | Operation / 操作 | Description / 说明 |
+|--------------|-------------------|---------------------|
+| Stage 1 | Safe Comment Cleaning / 安全注释清除 | Only delete standalone `#` comments, never damage characters inside strings |
+|  |  | 仅删除独立行 `#` 注释，不破坏字符串内部符号 |
+| Stage 2 | Base Obfuscation via python-obfuscator | Variable/function renaming, dead junk code, control flow flattening, hex/xor string encryption |
+|  | python-obfuscator 基础混淆 | 变量/函数重命名、垃圾无效代码、控制流扁平化、十六进制/异或字符串加密 |
+| Stage 3 | AES-128 String Encryption | Full-text string symmetric encryption (optional, custom 16-byte key supported) |
+|  | AES-128 字符串加密 | 全文字符串对称加密（可选，支持自定义 16 位密钥） |
+| Stage 4 | Anti-Debug Injection / 反调试检测注入 | Cross-platform anti-debug code; auto-exit when debugger detected |
+|  |  | 跨平台反调试代码，检测到调试自动退出 |
+| Stage 5 | Export Encrypted Pyc / 导出加密 pyc | Optional compilation to encrypted `.pyc` bytecode for secondary anti-decompilation |
+|  |  | 可选编译导出加密 `.pyc` 字节码文件，二次反编译加固 |
+
+### Core Features | 核心功能
+
+- **File Operations / 文件操作**：Single file selection, batch multi-file processing, drag-and-drop loading, auto-fill output path
+  单文件选择、批量多文件处理、拖拽加载、自动填充输出路径
+- **Code Preview / 代码预览**：Real-time dual-pane split view (raw code / obfuscated code), diff comparison popup
+  原始代码 / 混淆代码双栏实时预览，差异对比弹窗
+- **10 Base Obfuscation Strategies / 10 项基础混淆策略**：String hex encrypt, number constant encrypt, variable/function renaming, dead junk code injection, fake exception branches, control flow flattening, string XOR encrypt, random indent disturbance, type annotation removal
+  字符串十六进制加密、数字常量加密、变量/函数重命名、垃圾代码注入、虚假异常分支、控制流扁平化、字符串异或加密、随机缩进干扰、类型注解删除
+- **3 Advanced Encryption Modules / 3 项高级加密**：AES string encryption, anti-debug detection, export encrypted bytecode
+  AES 字符串加密、反调试检测、导出加密字节码
+- **Auxiliary / 辅助功能**：Dark/light dual theme, config import/export (JSON), log saving, one-click dependency install, MD5 checksum, progress bar
+  深色/浅色双主题、配置导入导出（JSON）、日志保存、一键安装依赖、MD5 校验、进度条展示
+- **Presets / 预设方案**：Enable all, disable all, default recommended preset (one-click balanced high-strength config)
+  全选开启、全部关闭、默认推荐配置（一键加载均衡高强度预设）
+
+### GUI Layout Overview | GUI 布局速览
+
+```
+┌─ Top Toolbar: Dark Mode / Config Save&Load / Log Save / AES Key / Clear Comments ──────────────────┐
+┌─ 顶部工具栏：主题切换 / 配置导入导出 / 日志保存 / AES密钥 / 清空注释 ──────────────────────────────────┘
+├─ File Select: Source Path + Single/Batch Buttons | Output Path + Browse/Auto Fill ─────────────────┤
+├─ 文件选择区：源文件路径 + 单选/批量按钮 | 输出路径 + 浏览/自动填充按钮 ──────────────────────────────────┤
+├─ Obfuscation Options Panel / 混淆配置面板 ──────────────────────────────────────────────────────────┤
+│  ┌── Base Obfuscate (10 options, 2 columns) ──┐  ┌── Advanced Multi-Engine Encrypt ──┐           │
+│  │ String Encrypt / Number Encrypt            │  │ AES String Encrypt                │           │
+│  │ Rename Var / Rename Func                   │  │ Anti-Debug Detect                 │           │
+│  │ Dead Code / Fake Exception                 │  │ Export Encrypted Pyc              │           │
+│  │ Control Flat / Remove Annot                │  └──────────────────────────────────┘           │
+│  │ String XOR / Random Indent                 │                                                │
+│  └────────────────────────────────────────────┘                                                │
+│  [Enable All] [Disable All] [Default Preset] [Install All Dependencies]                         │
+│  [全选开启] [全部关闭] [默认推荐] [一键安装依赖]                                                  │
+├─ Code Preview: Dual Pane Split (Raw Source | Obfuscated Source) ─────────────────────────────────┤
+├─ 代码预览：双栏分屏（原始代码 | 混淆代码）─────────────────────────────────────────────────────────┤
+├─ Progress Bar / 进度条 ───────────────────────────────────────────────────────────────────────────┤
+├─ Buttons: [Start Obfuscate] [Batch Obfuscate] [Compare Diff] [Clear Log] [Help] [EXE Pack Cmd] ──┤
+├─ 操作按钮：[开始混淆] [批量混淆] [对比差异] [清空日志] [功能说明] [EXE打包命令] ──────────────────────┤
+└─ Run Log Box / 运行日志框 ───────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 2. UPX Executable Compressor | UPX 可执行文件压缩工具 (`upx.py`)
+
+A graphical interface for the UPX command-line tool, supporting compression optimization for compiled `.exe` / `.dll` / `.pyd` files.
+
+为 UPX 命令行工具提供图形化界面，支持对已编译的 `.exe` / `.dll` / `.pyd` 文件进行压缩优化。
+
+### Feature List | 功能清单
+
+- **Compression Levels / 压缩等级**：Fast(1) / Balanced(5) / Best(9) / Ultra Brutal(--ultra-brute)
+  快速(1) / 均衡(5) / 高压缩(9) / 极致压缩(--ultra-brute)
+- **Operation Modes / 操作模式**：Compress / Decompress(-d) / Test(-t) / List Info(-l) / Show Params(--fileinfo)
+  压缩 / 解压(-d) / 校验(-t) / 查看信息(-l) / 查看参数(--fileinfo)
+- **Extra Options / 可选参数**：Quiet(-q), Force(-f), Keep Backup(-k), Strip Relocs, Compress Icons, No Color
+  静默输出(-q)、强制压缩(-f)、保留备份(-k)、剥离重定位、压缩全部图标、无彩色输出
+- **Safety Mechanism / 安全机制**：Auto-filter forbidden VC runtime libraries (`vcruntime140.dll`, `msvcp140.dll`, etc.)
+  自动过滤禁止压缩的 VC 运行库（`vcruntime140.dll`、`msvcp140.dll` 等）
+- **Smart Detection / 智能检测**：Auto-disable `--strip-relocs` when `.dll` / `.pyd` files are present to prevent crashes
+  存在 `.dll` / `.pyd` 时自动禁用 `--strip-relocs` 防止崩溃
+- **Bilingual Interface / 双语界面**：One-click Chinese/English switch, full UI text internationalization
+  中英文一键切换，界面文本完整国际化
+- **Config Persistence / 配置持久化**：Save/load JSON config file
+  保存/加载 JSON 配置文件
+- **Real-time Log / 实时日志**：Background threaded execution, separated stdout/stderr output with auto-scroll
+  后台线程执行命令，标准输出/错误输出分离显示，支持自动滚动
+
+---
+
+## 3. One-Click Launcher | 一键打包启动器 (`main2-exe.py`)
+
+Integrated launcher GUI connecting all three tools into a unified entry point.
+
+集成启动器 GUI，将三个工具串联为统一入口：
+
+| Button / 按钮 | Function / 功能 |
+|---------------|-----------------|
+| Obfuscate Program / 混淆程序 | Launch `run_obf.exe` for source code obfuscation |
+|  | 调用 `run_obf.exe` 进行源码混淆 |
+| UPX Compress / UPX 压缩 | Launch `upx.exe` for EXE compression |
+|  | 调用 `upx.exe` 进行 EXE 压缩 |
+| Select Program / 选择程序 | Select the `.py` source file to compile |
+|  | 选择待编译的 `.py` 源文件 |
+| Start Package / 开始打包 | Invoke Nuitka (`--zig` + `--enable-plugin=tk-inter`) to compile into EXE |
+|  | 调用 Nuitka（`--zig` + `--enable-plugin=tk-inter`）编译为 EXE |
+| Standalone Mode / 独立运行环境 | Enable `--standalone` mode when checked |
+|  | 勾选后启用 `--standalone` 模式 |
+
+---
+
+## Dependencies | 依赖安装
+
 ```bash
+# Obfuscator dependencies / 混淆器依赖
 pip install python-obfuscator tkinterdnd2 pycryptodome astor
+
+# Packaging dependency / 打包依赖
+pip install nuitka
+
+# UPX is bundled in the upx/ directory, no extra installation needed
+# UPX 已内置在 upx/ 目录，无需额外安装
 ```
-### Library Function Description | 库作用说明
-1. `python-obfuscator`: Base syntax obfuscation core library
-   基础语法混淆核心库
-2. `tkinterdnd2`: Window drag-and-drop file loading support
-   窗口拖拽文件加载支持
-3. `pycryptodome`: AES symmetric string encryption engine
-   AES对称字符串加密引擎
-4. `astor`: Abstract syntax tree parsing tool for string encryption
-   字符串加密所需抽象语法树解析工具
-5. `tkinter`: Built-in Python GUI library, no extra installation required
-   Python自带图形界面库，无需额外安装
+
+### Dependency Description | 依赖作用说明
+
+| Library / 库 | Purpose / 用途 |
+|--------------|----------------|
+| `python-obfuscator` | Base syntax obfuscation core library / 基础语法混淆核心库 |
+| `tkinterdnd2` | Drag-and-drop file loading support / 窗口拖拽文件加载支持 |
+| `pycryptodome` | AES-128 symmetric string encryption engine / AES-128 对称字符串加密引擎 |
+| `astor` | AST parsing tool for string encryption code transformation / AST 语法树解析，用于字符串加密时的代码转换 |
+| `nuitka` | Python-to-C compiler, generates native EXE / Python 到 C 编译器，生成原生 EXE |
+
+---
 
 ## How to Run | 运行方式
-1. Save the code as `run_obf.py`
-   将源码保存为 run_obf.py
-2. Execute the script in terminal
-   终端执行脚本：
+
+### Obfuscator Tool | 混淆工具
 ```bash
 python run_obf.py
 ```
-3. After startup, operate through graphical buttons, all text supports Chinese-English dual display
-   启动后通过图形按钮操作，全部界面文本支持中英双语同步展示
 
-## GUI Button Guide | 图形界面按钮功能说明
-### Top Toolbar | 顶部工具栏
-- Dark Mode / 深色模式: Switch light/dark interface theme
-  切换亮/暗界面主题
-- Save Config / 导出配置: Save current obfuscation switch preset as json file
-  将当前混淆勾选预设保存为json文件
-- Load Config / 加载配置: Read saved json configuration preset
-  读取已保存的json配置预设
-- Save Log / 保存日志: Export all running log text to local txt
-  将全部运行日志文本导出本地txt
-- Custom AES Key / 自定义加密密钥: Input 16-bit custom key for AES string encryption
-  输入16位自定义密钥用于AES字符串加密
-- Random Seed / 随机种子: Reserved parameter, disabled (python-obfuscator has no set_seed method)
-  随机种子：预留参数，已禁用（库无set_seed接口）
-- Clear All Comments / 清空注释: Toggle safe single-line comment clearing function
-  开关安全单行注释清除功能
-
-### File Selection Area | 文件选择区域
-- Source File | 待混淆源码: Input box to display selected single python script path
-  输入框展示选中的单个Python脚本路径
-- Browse Single / 单选文件: Pop up file selector to pick single source file
-  弹出文件选择器选取单个源码文件
-- Batch Select / 批量多选: Multi-select multiple `.py` files for batch obfuscation
-  多选多个py文件用于批量混淆处理
-- Output File | 混淆后输出: Input box to display output save path
-  输入框展示输出保存路径
-- Browse / 浏览: Pop up save file selector to customize output path
-  弹出保存选择器自定义输出路径
-- Auto Fill / 自动填充: Auto generate `obf_xxx.py` output path based on source file
-  根据源码自动生成 obf_xxx.py 输出路径
-
-### Obfuscation Options Panel | 混淆配置面板
-#### Base Obfuscate | 基础语法混淆
-Dual-column check box group for all python-obfuscator native obfuscation functions, support one-click full enable/disable
-双栏复选框组，包含全部python-obfuscator原生混淆功能，支持一键全开启/全关闭
-
-#### Advanced Multi-Engine Encrypt | 高级多引擎加密
-- AES String Encrypt / AES字符串加密: Toggle AES full text string symmetric encryption module
-  开关AES全文字符串对称加密模块
-- Anti-Debug Detect / 反调试检测: Toggle injection of anti-debug code at file header
-  开关在文件头部注入反调试检测代码
-- Export Encrypted Pyc / 导出加密字节码: Auto compile `.pyc` bytecode after obfuscation completes
-  混淆完成后自动编译pyc字节码文件
-
-#### Preset Shortcut Buttons | 预设快捷按钮
-- Enable All / 全选开启: Check all obfuscation & encryption switches
-  勾选全部混淆加密开关
-- Disable All / 全部关闭: Uncheck all obfuscation & encryption switches
-  取消全部混淆加密开关
-- Default Preset / 默认推荐配置: Load balanced high-strength composite obfuscation preset
-  加载均衡高强度复合混淆预设
-- Install All Dependencies / 一键安装全部依赖: Background batch install missing required libraries
-  后台批量安装缺失的所需依赖库
-
-### Operation Buttons Area | 操作按钮区
-- Start Obfuscate / 开始混淆: Execute multi-layer composite obfuscation for single selected file
-  对选中单个文件执行多层复合混淆
-- Batch Obfuscate / 批量混淆: Process all batch-selected python files one by one
-  逐个处理所有批量选中的Python文件
-- Compare Diff / 对比差异: Pop up window to view raw & obfuscated code snippet comparison
-  弹窗查看原始与混淆后代码片段对比
-- Clear Log / 清空日志: Clear all text in running log box
-  清空运行日志框全部文本
-- Help Info / 功能说明: Pop up full bilingual function introduction document
-  弹窗完整双语功能说明文档
-- One-Click EXE Tip / EXE打包命令: Pop up PyInstaller single-file packaging command template
-  弹窗PyInstaller单文件打包命令模板
-
-## Fixed Critical Bug List | 已修复关键漏洞清单
-1. Removed invalid `set_seed()` call (python-obfuscator library does not support this instance method, eliminate attribute error)
-   移除无效set_seed()调用（python-obfuscator库不支持该实例方法，消除属性不存在报错）
-2. Rewrote comment cleaning regular expression, only match standalone line `#` comments, avoid truncating string internal text (fix `unterminated string literal` syntax parsing error)
-   重写注释清除正则，仅匹配独立行#注释，避免截断字符串内部文本（修复未闭合字符串字面量语法解析报错）
-3. Retained AES encryption module but fixed AST string replacement syntax compatibility defects, no longer generate broken cross-line string nodes
-   保留AES加密模块，修复AST字符串替换语法兼容缺陷，不再生成破损跨行字符串节点
-4. Optimized multi-layer obfuscation execution order, strictly separate comment cleaning, base obfuscation, AES encryption, anti-debug injection to avoid syntax damage
-   优化多层混淆执行顺序，严格分隔注释清除、基础混淆、AES加密、反调试注入流程，避免语法损坏
-5. Optimized batch processing logic, single file processing failure will not interrupt the entire batch task, log separate record failure file information
-   优化批量处理逻辑，单个文件处理失败不会中断整批任务，日志单独记录失败文件信息
-[Python-Nuitka](../Python-Nuitka)
-
-## Project File Structure | 项目文件目录
+### UPX Compressor Tool | UPX 压缩工具
+```bash
+python upx.py
 ```
-obfuscator-tool/
-├─ run_obf.py          # Main multi-engine obfuscator GUI source code 多引擎混淆图形工具主程序
-├─ README.md           # Bilingual project documentation 本双语项目说明文档
-├─ .gitignore          # Git ignore configuration (shield cache, temporary files, pyc, log)
-└─ obf_config.json     # Optional custom obfuscation preset configuration file 可选自定义混淆预设配置文件
+
+### One-Click Launcher | 一键启动器
+```bash
+python main2-exe.py
 ```
+
+---
+
+## Project File Structure | 项目文件结构
+
+```
+Python-Nuitka/
+├── run_obf.py          # Multi-engine obfuscator GUI / 多引擎复合混淆 GUI 主程序
+├── upx.py              # UPX compressor GUI / UPX 压缩图形界面
+├── main2-exe.py        # One-click packaging launcher / 一键打包启动器
+├── README.md           # This document / 本说明文档
+└── upx/                # UPX executable and docs / UPX 可执行文件及文档
+    ├── upx.exe         # UPX main binary / UPX 主程序
+    ├── LICENSE         # UPX license / UPX 许可证
+    ├── README / NEWS   # UPX documentation / UPX 说明文档
+    └── upx-doc.html    # UPX detailed docs / UPX 详细文档
+```
+
+---
 
 ## Notes | 注意事项
-1. When using AES string encryption, the target source code cannot contain incomplete escape characters or unclosed triple quotation strings, otherwise AST parsing will fail
-   使用AES字符串加密时，目标源码不能包含残缺转义字符、未闭合三引号字符串，否则AST解析会失败
-2. The anti-debug code only blocks conventional debuggers, cannot completely prevent reverse analysis; it is recommended to match AES + python-obfuscator composite reinforcement for best effect
-   反调试代码仅阻断常规调试器，无法彻底杜绝逆向分析，建议搭配AES+python-obfuscator复合加固效果最优
-3. If the obfuscation reports syntax error, you can temporarily uncheck `Clear All Comments` and `AES String Encrypt` to narrow down the problematic module
-   若混淆报语法错误，可临时取消勾选「清空注释」「AES字符串加密」缩小故障模块范围
-4. The exported `.pyc` bytecode can only run under the same Python major version as the compilation environment
-   导出的pyc字节码仅能在编译环境相同大版本Python下运行
+
+1. When using AES string encryption, the source code must not contain incomplete escape characters or unclosed triple-quoted strings, otherwise AST parsing will fail.
+   使用 AES 字符串加密时，目标源码不能包含残缺转义字符或未闭合的三引号字符串，否则 AST 解析会失败。
+2. Anti-debug code only blocks conventional debuggers (e.g. IDE debugger, `pdb`) and cannot completely prevent reverse analysis. For best results, combine AES + python-obfuscator for composite hardening.
+   反调试代码仅阻断常规调试器（如 IDE 调试、`pdb`），无法彻底杜绝逆向分析，建议搭配 AES + python-obfuscator 复合加固效果最优。
+3. If obfuscation reports a syntax error, try unchecking "Clear All Comments" and "AES String Encrypt" one by one to isolate the problematic module.
+   若混淆报语法错误，可依次取消「清空注释」「AES 字符串加密」逐个排查问题模块。
+4. Exported `.pyc` bytecode can only run under the same Python major version as the compilation environment.
+   导出的 `.pyc` 字节码仅能在相同 Python 大版本下运行。
+5. When UPX-compressing `.dll` / `.pyd` files, do NOT enable `--strip-relocs`. The tool has built-in auto-detection for this (but manual confirmation is still recommended).
+   UPX 压缩 `.dll` / `.pyd` 文件时请勿勾选 `--strip-relocs`，工具已内置自动检测（仍需人工确认）。
+6. Nuitka compilation requires a configured C compiler toolchain (zig is recommended). The first compilation may take a long time.
+   Nuitka 编译需要配置 C 编译器环境（推荐 zig），首次编译耗时较长。
