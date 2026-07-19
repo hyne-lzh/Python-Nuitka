@@ -1,46 +1,97 @@
 import tkinter as tk
-from tkinter import ttk, filedialog,messagebox
-import subprocess,os
+from tkinter import ttk, filedialog, messagebox
+import subprocess
+import os
+import sys
+
 
 def select_script():
-    path = filedialog.askopenfilename(filetypes=[("Python Script", "*.py")])
+    path = filedialog.askopenfilename(
+        title="Select Python Script",
+        filetypes=[("Python Script", "*.py")]
+    )
     if path:
         var_script.set(path)
 
+
 def run_nuitka_cmd():
-    cmd = [r"C:\Program Files\Python314\python.exe","-m","nuitka","--zig","--enable-plugin=tk-inter"]
-    is_standalone = var_standalone.get()
-    if is_standalone:
+    cmd = [sys.executable, "-m", "nuitka", "--zig", "--enable-plugin=tk-inter"]
+
+    if var_standalone.get():
         cmd.append("--standalone")
-    python_code = code.get()
-    file = os.path.exists(python_code)
-    if file:
-        cmd.append(python_code)
-        print(cmd)
-    else:
-        messagebox.showerror("程序","程序不在")
+
+    python_code = var_script.get()
+    if not python_code or not os.path.exists(python_code):
+        messagebox.showerror("Error", f"File not found:\n{python_code}\n文件不存在，请重新选择！")
         return
 
-    proc = subprocess.Popen(cmd,creationflags=subprocess.CREATE_NEW_CONSOLE)
+    cmd.append(python_code)
+
+    try:
+        subprocess.Popen(cmd, creationflags=subprocess.CREATE_NEW_CONSOLE)
+    except FileNotFoundError:
+        messagebox.showerror("Error", "Nuitka not found. Please install it first:\nnuitka 未安装，请先执行 pip install nuitka")
+    except Exception as e:
+        messagebox.showerror("Error", f"Failed to start Nuitka:\n启动失败：{e}")
 
 
-root = tk.Tk()
-run_obf_b = ttk.Button(root,text="混淆程序",command=lambda:subprocess.Popen("python run_obf.py"))
-upx_b = ttk.Button(root,text="UPX压缩",command=lambda:subprocess.Popen("python upx.py"))
-run_nuitka = ttk.Button(root,text="开始打包",command=run_nuitka_cmd)
-c_code = ttk.Button(root, text="选择程序", command=select_script)
-l_code = ttk.Label(root, text="程序:")
-var_standalone = tk.BooleanVar(value=True)
-stand = ttk.Checkbutton(root, text="独立运行环境 --standalone",variable=var_standalone)
-var_script = tk.StringVar(root)
-code = ttk.Entry(root, textvariable=var_script, width=60)
-l_code.grid(row=0, column=1)
-code.grid(row=0, column=2)
-c_code.grid(row=0, column=3)
-run_obf_b.grid(row=1, column=1)
-upx_b.grid(row=1, column=3)
-run_nuitka.grid(row=1, column=2)
-stand.grid(row=2, column=1)
-root.geometry("800x600")
+def run_tool(name):
+    """Launch a tool: prefer compiled .exe first, fallback to .py via Python.
+    启动子工具：优先使用已编译的 .exe（无需 Python 环境），否则用 Python 运行 .py。"""
+    exe_path = f"{name}.exe"
+    py_path = f"{name}.py"
 
-root.mainloop()
+    if os.path.exists(exe_path):
+        try:
+            subprocess.Popen([exe_path])
+            return
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to start {exe_path}:\n{e}")
+            return
+
+    if os.path.exists(py_path):
+        try:
+            subprocess.Popen([sys.executable, py_path])
+            return
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to start {py_path}:\n{e}")
+            return
+
+    messagebox.showerror("Error",
+        f"Neither {exe_path} nor {py_path} found.\n"
+        f"未找到 {exe_path} 或 {py_path}。\n\n"
+        f"Tip: run build_tools.py to compile them into .exe first.\n"
+        f"提示：请先运行 build_tools.py 将它们编译为 .exe")
+
+
+def run_obfuscator():
+    run_tool("run_obf")
+
+
+def run_upx():
+    run_tool("upx")
+
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    root.title("Python-Nuitka Toolchain Launcher")
+    root.geometry("800x600")
+
+    # Row 0: 文件选择
+    tk.Label(root, text="Program:").grid(row=0, column=0, padx=5, pady=5, sticky="e")
+    var_script = tk.StringVar()
+    tk.Entry(root, textvariable=var_script, width=60).grid(row=0, column=1, padx=5, pady=5)
+    tk.Button(root, text="Select Program", command=select_script).grid(row=0, column=2, padx=5, pady=5)
+
+    # Row 1: 操作按钮
+    tk.Button(root, text="Obfuscate", command=run_obfuscator, width=14).grid(row=1, column=0, padx=5, pady=8)
+    tk.Button(root, text="Package EXE", command=run_nuitka_cmd, width=14).grid(row=1, column=1, padx=5, pady=8)
+    tk.Button(root, text="UPX Compress", command=run_upx, width=14).grid(row=1, column=2, padx=5, pady=8)
+
+    # Row 2: standalone 选项
+    var_standalone = tk.BooleanVar(value=True)
+    tk.Checkbutton(root, text="Standalone mode (--standalone)", variable=var_standalone).grid(
+        row=2, column=0, columnspan=3, pady=5
+    )
+
+    root.mainloop()

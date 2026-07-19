@@ -431,6 +431,21 @@ class UPXGUI:
             self.log(f"Load config error: {e}")
 
 if __name__ == "__main__":
-    root = tk.Tk()
-    app = UPXGUI(root)
-    root.mainloop()
+    try:
+        root = tk.Tk()
+        app = UPXGUI(root)
+        root.mainloop()
+    except Exception as e:
+        # Nuitka 编译后可能静默崩溃，这里兜底输出错误
+        import traceback
+        err_msg = traceback.format_exc()
+        # 尝试弹窗
+        try:
+            import tkinter.messagebox as mb
+            mb.showerror("Fatal Error", f"Application failed to start:\n\n{err_msg}")
+        except Exception:
+            pass
+        # 也输出到文件方便排查
+        with open("upx_crash.log", "w", encoding="utf-8") as f:
+            f.write(err_msg)
+        sys.exit(1)

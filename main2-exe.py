@@ -26,7 +26,7 @@ def run_nuitka_cmd():
 
 root = tk.Tk()
 run_obf_b = ttk.Button(root,text="混淆程序",command=lambda:subprocess.Popen("run_obf.exe"))
-upx_b = ttk.Button(root,text="UPX压缩",command=lambda:subprocess.Popen("upx.exe"))
+upx_b = ttk.Button(root,text="UPX压缩",command=lambda:subprocess.Popen("upx\\upx.exe"))
 run_nuitka = ttk.Button(root,text="开始打包",command=run_nuitka_cmd)
 c_code = ttk.Button(root, text="选择程序", command=select_script)
 l_code = ttk.Label(root, text="程序:")
